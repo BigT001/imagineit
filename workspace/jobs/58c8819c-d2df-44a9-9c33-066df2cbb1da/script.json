@@ -1,0 +1,40 @@
+{
+  "title": "Video about Generate amazing social media videos",
+  "duration": 31,
+  "style": "modern",
+  "scenes": [
+    {
+      "scene_id": 1,
+      "duration": 9.299999999999999,
+      "description": "Opening scene introducing Generate amazing social media videos",
+      "narration": "Let's explore Generate amazing social media videos together.",
+      "visuals": [
+        "wide shot",
+        "fade in"
+      ],
+      "animation_notes": "Smooth camera pan from left to right"
+    },
+    {
+      "scene_id": 2,
+      "duration": 12.4,
+      "description": "Main content about Generate amazing social media videos",
+      "narration": "Here are the key aspects of Generate amazing social media videos that make it interesting.",
+      "visuals": [
+        "close up",
+        "detailed view"
+      ],
+      "animation_notes": "Highlight key elements with subtle glow effect"
+    },
+    {
+      "scene_id": 3,
+      "duration": 9.299999999999999,
+      "description": "Conclusion and call to action",
+      "narration": "Thanks for watching! Don't forget to like and subscribe.",
+      "visuals": [
+        "zoom out",
+        "fade to logo"
+      ],
+      "animation_notes": "Fade to brand colors and display social media handles"
+    }
+  ]
+}
