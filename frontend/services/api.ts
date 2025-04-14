@@ -1,55 +1,77 @@
-import { GenerateResult, JobStatus, UploadResult } from '../types';
+// API base URL
+export const API_BASE_URL = 'http://localhost:5000/api';
 
-const API_BASE_URL = 'http://localhost:5000';
-
-export const testBackendConnection = async (): Promise<{ status: string; message: string }> => {
-  const response = await fetch(`${API_BASE_URL}/api/test`);
-  return response.json();
+// Test backend connection
+export const testBackendConnection = async () => {
+  const response = await fetch(`${API_BASE_URL}/test`);
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+  return await response.json();
 };
 
-export const checkBlenderVersion = async (): Promise<{ status: string; version?: string; message?: string }> => {
-  const response = await fetch(`${API_BASE_URL}/api/blender-version`);
-  return response.json();
+// Check Blender version
+export const checkBlenderVersion = async () => {
+  const response = await fetch(`${API_BASE_URL}/blender-version`);
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+  return await response.json();
 };
 
-export const fetchJobs = async () => {
-  const response = await fetch(`${API_BASE_URL}/api/jobs`);
-  return response.json();
-};
-
-export const fetchJobStatus = async (jobId: string): Promise<JobStatus> => {
-  const response = await fetch(`${API_BASE_URL}/api/status/${jobId}`);
-  return response.json();
-};
-
-export const generateVideo = async (
-  prompt: string, 
-  duration: number, 
-  style: string
-): Promise<GenerateResult> => {
-  const response = await fetch(`${API_BASE_URL}/api/generate`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      prompt,
-      duration,
-      style
-    }),
-  });
-  
-  return response.json();
-};
-
-export const uploadFile = async (file: File): Promise<UploadResult> => {
+// Upload a file
+export const uploadFile = async (file: File) => {
   const formData = new FormData();
   formData.append('file', file);
   
-  const response = await fetch(`${API_BASE_URL}/api/upload`, {
+  const response = await fetch(`${API_BASE_URL}/upload`, {
     method: 'POST',
     body: formData,
   });
   
-  return response.json();
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+  
+  return await response.json();
+};
+
+// Generate a video
+export const generateVideo = async (prompt: string) => {
+  const response = await fetch(`${API_BASE_URL}/generate`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ prompt }),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+  
+  return await response.json();
+};
+
+
+// Fetch jobs
+export const fetchJobs = async () => {
+  const response = await fetch(`${API_BASE_URL}/jobs`);
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+  
+  return await response.json();
+};
+
+// Fetch job status
+export const fetchJobStatus = async (jobId: string) => {
+  const response = await fetch(`${API_BASE_URL}/jobs/${jobId}`);
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+  
+  return await response.json();
 };
