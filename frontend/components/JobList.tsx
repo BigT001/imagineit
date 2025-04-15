@@ -5,7 +5,7 @@ import { getStatusColor } from '../utils/statusUtils';
 interface JobListProps {
   jobs: Job[];
   onSelectJob: (jobId: string) => void;
-  currentJobId?: string | null; // Made optional with ? to maintain backward compatibility
+  currentJobId?: string | null;
 }
 
 const JobList: React.FC<JobListProps> = ({ jobs, onSelectJob, currentJobId }) => {
@@ -23,7 +23,7 @@ const JobList: React.FC<JobListProps> = ({ jobs, onSelectJob, currentJobId }) =>
         <div className="space-y-3 max-h-[400px] overflow-y-auto">
           {jobs.map(job => (
             <div 
-              key={job.job_id} 
+              key={job.job_id} // This key should be unique
               className={`border rounded p-3 transition-colors ${
                 currentJobId === job.job_id 
                   ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800' 
@@ -42,6 +42,7 @@ const JobList: React.FC<JobListProps> = ({ jobs, onSelectJob, currentJobId }) =>
                 </span>
               </div>
               <div className="mt-2 flex space-x-2">
+                {/* Make sure any other mapped elements have keys */}
                 <button
                   onClick={() => onSelectJob(job.job_id)}
                   className={`text-xs px-2 py-1 rounded hover:bg-blue-200 dark:hover:bg-blue-800 ${

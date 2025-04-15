@@ -76,7 +76,7 @@ The script should include:
 1. A title for the video
 2. A list of scenes, where each scene has:
    - A detailed description of what happens in the scene
-   - The duration of the scene in seconds (between 3-10 seconds)
+   - The duration of the scene in seconds (between 10-20 seconds)
 
 Format your response as a JSON object with the following structure:
 {{
@@ -93,7 +93,7 @@ Format your response as a JSON object with the following structure:
   ]
 }}
 
-Make sure your response is valid JSON and includes at least 3 scenes.
+Make sure your response is valid JSON and includes at least 5 -10 scenes.
 """
     
     def _call_huggingface_api(self, prompt: str) -> str:

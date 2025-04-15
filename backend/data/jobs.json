@@ -25,5 +25,14 @@
     "updated_at": 1744667277,
     "video_ready": false,
     "error": "401 Client Error: Unauthorized for url: https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2"
+  },
+  {
+    "id": "65d5ce1e-22cb-4f93-831b-43ee877dc0b8",
+    "prompt": "In a quiet Nigerian neighborhood, a retired superhero\u2014now a broke, middle-aged man hiding in plain sight\u2014gets an unexpected visitor: a child who has inherited his powers. The child begs him to train her, claiming that something dark is coming and only she can stop it.\n\nThe hero, haunted by a past mistake that cost lives, refuses. But when the child is abducted by a mysterious group trying to harvest her powers, he must confront his guilt, reclaim his strength, and rise for one last mission.\n\n",
+    "status": "error",
+    "created_at": 1744676232,
+    "updated_at": 1744676251,
+    "video_ready": false,
+    "error": "401 Client Error: Unauthorized for url: https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2"
   }
 ]
