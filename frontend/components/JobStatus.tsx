@@ -1,115 +1,237 @@
 import React, { useState } from 'react';
-import { JobStatus as JobStatusType } from '../types';
-import { API_BASE_URL } from '../services/api';
+import { JobStatusInfo, Step } from '@/types';
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Loader2, CheckCircle, XCircle, Clock, AlertTriangle, RefreshCw } from "lucide-react";
+import { cancelJob } from '@/services/api';
+
+// Define the API base URL directly in this component
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 interface JobStatusProps {
-  jobStatus: JobStatusType;
+  jobStatus: JobStatusInfo;
   jobId: string;
+  onRefresh?: () => void;
 }
 
-const JobStatus: React.FC<JobStatusProps> = ({ jobStatus, jobId }) => {
-  const [videoError, setVideoError] = useState<string | null>(null);
+const JobStatus: React.FC<JobStatusProps> = ({ jobStatus, jobId, onRefresh }) => {
+  const [cancelling, setCancelling] = useState(false);
+  const [cancelError, setCancelError] = useState<string | null>(null);
 
-  const getStatusColor = (status: string) => {
+  const getStatusIcon = () => {
+    const status = jobStatus.status.toLowerCase();
+    
     switch (status) {
       case 'completed':
-        return 'bg-green-100 text-green-800';
+        return <CheckCircle className="h-5 w-5 text-green-500" />;
       case 'error':
-        return 'bg-red-100 text-red-800';
-      case 'initializing':
-      case 'generating_script':
-      case 'generating_assets':
-      case 'creating_animation':
-        return 'bg-blue-100 text-blue-800';
+      case 'failed':
+        return <XCircle className="h-5 w-5 text-red-500" />;
+      case 'cancelled':
+        return <XCircle className="h-5 w-5 text-gray-500" />;
+      case 'processing':
+        return <Loader2 className="h-5 w-5 text-blue-500 animate-spin" />;
+      case 'pending':
+        return <Clock className="h-5 w-5 text-amber-500" />;
       default:
-        return 'bg-gray-100 text-gray-800';
+        return <AlertTriangle className="h-5 w-5 text-amber-500" />;
     }
   };
 
-  const getStatusText = (status: string) => {
+  const getStatusColor = () => {
+    const status = jobStatus.status.toLowerCase();
+    
     switch (status) {
-      case 'initializing':
-        return 'Initializing job...';
-      case 'generating_script':
-        return 'Generating script...';
-      case 'generating_assets':
-        return 'Generating assets...';
-      case 'creating_animation':
-        return 'Creating animation...';
       case 'completed':
-        return 'Job completed successfully!';
+        return 'bg-green-500';
       case 'error':
-        return 'Error processing job';
+      case 'failed':
+        return 'bg-red-500';
+      case 'cancelled':
+        return 'bg-gray-500';
+      case 'processing':
+        return 'bg-blue-500';
+      case 'pending':
+        return 'bg-amber-500';
       default:
-        return `Status: ${status}`;
+        return 'bg-gray-500';
     }
   };
 
-  const handleVideoError = () => {
-    setVideoError('Error loading video. Please try again later.');
+  const getStatusText = () => {
+    const status = jobStatus.status.toLowerCase();
+    
+    switch (status) {
+      case 'completed':
+        return 'Job completed successfully';
+      case 'error':
+      case 'failed':
+        return 'Job failed';
+      case 'cancelled':
+        return 'Job was cancelled';
+      case 'processing':
+        return `Processing your request... (${jobStatus.current_step})`;
+      case 'pending':
+        return 'Job is queued and waiting to start';
+      default:
+        return 'Unknown status';
+    }
   };
 
-  const downloadVideo = () => {
-    window.open(`${API_BASE_URL}/videos/${jobId}`, '_blank');
+  const handleCancelJob = async () => {
+    if (!jobId) return;
+    
+    setCancelling(true);
+    setCancelError(null);
+    
+    try {
+      const response = await cancelJob(jobId);
+      
+      if (response.status !== 'success') {
+        setCancelError(response.message || 'Failed to cancel job');
+      } else if (onRefresh) {
+        onRefresh();
+      }
+    } catch (error) {
+      console.error('Error cancelling job:', error);
+      setCancelError('Error cancelling job. Please try again.');
+    } finally {
+      setCancelling(false);
+    }
   };
+
+  const isJobActive = ['pending', 'processing'].includes(jobStatus.status.toLowerCase());
+  const createdDate = new Date(jobStatus.created_at * 1000); // Convert timestamp to date
+  const updatedDate = new Date(jobStatus.updated_at * 1000); // Convert timestamp to date
+  const completedDate = jobStatus.completed_at ? new Date(jobStatus.completed_at * 1000) : null;
 
   return (
-    <div className="p-4 border rounded-md">
-      <h2 className="text-xl font-semibold mb-4">Job Status</h2>
-      
-      <div className="mb-4">
-        <div className={`px-3 py-2 rounded-md ${getStatusColor(jobStatus.status)}`}>
-          <p className="font-medium">{getStatusText(jobStatus.status)}</p>
-        </div>
-        
-        {jobStatus.error && (
-          <div className="mt-2 p-3 bg-red-50 text-red-700 rounded-md">
-            <p className="font-medium">Error details:</p>
-            <p className="font-mono text-sm mt-1">{jobStatus.error}</p>
-          </div>
-        )}
-      </div>
-      
-      <div className="mb-4">
-        <p className="text-sm text-gray-600">
-          Job ID: <span className="font-mono">{jobId}</span>
-        </p>
-        <p className="text-sm text-gray-600">
-          Created: {new Date(jobStatus.created_at * 1000).toLocaleString()}
-        </p>
-        {jobStatus.completed_at && (
-          <p className="text-sm text-gray-600">
-            Completed: {new Date(jobStatus.completed_at * 1000).toLocaleString()}
-          </p>
-        )}
-      </div>
-      
-      {jobStatus.video_ready && (
-        <div className="mt-4">
-          <h3 className="text-lg font-medium mb-2">Generated Video</h3>
-          
-          {videoError ? (
-            <div className="p-3 bg-red-50 text-red-700 rounded-md mb-3">
-              {videoError}
+    <div className="space-y-4">
+      <Card>
+        <CardContent className="p-6">
+          <div className="flex items-center space-x-4 mb-4">
+            <div className={`p-3 rounded-full ${getStatusColor()} bg-opacity-10`}>
+              {getStatusIcon()}
             </div>
-          ) : (
-            <div className="relative aspect-video bg-black rounded-md overflow-hidden mb-3">
-              <video 
-                controls 
-                className="w-full h-full" 
-                onError={handleVideoError}
-                src={`${API_BASE_URL}/videos/${jobId}`}
-              />
+            <div>
+              <h3 className="text-lg font-medium">
+                Status: {jobStatus.status}
+              </h3>
+              <p className="text-muted-foreground">
+                {getStatusText()}
+              </p>
+            </div>
+          </div>
+          
+          <Progress value={jobStatus.progress} className="h-2 mb-4" />
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+            <div>
+              <p className="text-muted-foreground">Job ID:</p>
+              <p className="font-mono">{jobId}</p>
+            </div>
+            
+            <div>
+              <p className="text-muted-foreground">Created:</p>
+              <p>{createdDate.toLocaleString()}</p>
+            </div>
+            
+            <div>
+              <p className="text-muted-foreground">Last Updated:</p>
+              <p>{updatedDate.toLocaleString()}</p>
+            </div>
+            
+            {completedDate && (
+              <div>
+                <p className="text-muted-foreground">Completed:</p>
+                <p>{completedDate.toLocaleString()}</p>
+              </div>
+            )}
+          </div>
+          
+          {/* Display steps */}
+          {jobStatus.steps && jobStatus.steps.length > 0 && (
+            <div className="mt-6">
+              <h4 className="text-sm font-medium mb-3">Processing Steps:</h4>
+              <div className="space-y-3">
+                {jobStatus.steps.map((step: Step, index: number) => (
+                  <div key={index} className="border rounded-md p-3">
+                    <div className="flex justify-between items-center mb-2">
+                      <div className="flex items-center">
+                        {step.status === 'completed' && <CheckCircle className="h-4 w-4 text-green-500 mr-2" />}
+                        {step.status === 'processing' && <Loader2 className="h-4 w-4 text-blue-500 animate-spin mr-2" />}
+                        {step.status === 'pending' && <Clock className="h-4 w-4 text-amber-500 mr-2" />}
+                        {step.status === 'error' && <XCircle className="h-4 w-4 text-red-500 mr-2" />}
+                        <span className="font-medium">{step.name}</span>
+                      </div>
+                      <Badge variant={
+                        step.status === 'completed' ? 'outline' : 
+                        step.status === 'processing' ? 'secondary' :
+                        step.status === 'error' ? 'destructive' : 'outline'
+                      }>
+                        {step.status}
+                      </Badge>
+                    </div>
+                    <Progress value={step.progress} className="h-1 mb-2" />
+                    {step.message && (
+                      <p className="text-xs text-muted-foreground">{step.message}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
           )}
           
-          <button
-            onClick={downloadVideo}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          >
-            Download Video
-          </button>
-        </div>
+          {cancelError && (
+            <div className="mt-4 p-3 bg-red-50 text-red-800 rounded-md text-sm">
+              {cancelError}
+            </div>
+          )}
+          
+          <div className="flex justify-end space-x-2 mt-6">
+            {onRefresh && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onRefresh}
+                className="gap-1"
+              >
+                <RefreshCw className="h-4 w-4" />
+                Refresh
+              </Button>
+            )}
+            
+            {isJobActive && (
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={handleCancelJob}
+                disabled={cancelling}
+                className="gap-1"
+              >
+                {cancelling ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <XCircle className="h-4 w-4" />
+                )}
+                Cancel Job
+              </Button>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+      
+      {jobStatus.error && (
+        <Card className="border-red-200 bg-red-50">
+          <CardContent className="p-4">
+            <h4 className="font-medium text-red-800 mb-2">Error Details:</h4>
+            <pre className="whitespace-pre-wrap text-sm text-red-700 p-3 bg-red-100 rounded-md">
+              {jobStatus.error}
+            </pre>
+          </CardContent>
+        </Card>
       )}
     </div>
   );

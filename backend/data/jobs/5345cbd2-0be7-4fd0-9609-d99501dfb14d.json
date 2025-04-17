@@ -1,0 +1,38 @@
+{
+  "job_id": "5345cbd2-0be7-4fd0-9609-d99501dfb14d",
+  "prompt": "In a city plagued by endless blackouts and crime, a young woman discovers she can generate light\u2014but only when she\u2019s near death.\n\nAfter saving her younger brother during a violent robbery, word spreads of a \"light spirit\" protecting the slums. Now, hunted by both gangs and a secret government unit, she must decide: keep running, or burn bright one last time to spark a revolution.\n\n",
+  "image_id": null,
+  "created_at": 1744803578.0520477,
+  "updated_at": 1744803578.073918,
+  "status": "error",
+  "progress": 5,
+  "current_step": "Error during processing",
+  "steps": [
+    {
+      "name": "script_generation",
+      "status": "pending",
+      "progress": 0,
+      "message": "Waiting to start"
+    },
+    {
+      "name": "asset_generation",
+      "status": "pending",
+      "progress": 0,
+      "message": "Waiting for script generation"
+    },
+    {
+      "name": "animation",
+      "status": "pending",
+      "progress": 0,
+      "message": "Waiting for asset generation"
+    },
+    {
+      "name": "rendering",
+      "status": "pending",
+      "progress": 0,
+      "message": "Waiting for animation"
+    }
+  ],
+  "output": {},
+  "error": "'job_id'"
+}

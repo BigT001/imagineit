@@ -1,38 +1,52 @@
 [
+ 
   {
-    "id": "53e846d7-7b81-4b02-b366-228072b90a5d",
-    "prompt": "In a quiet Nigerian neighborhood, a retired superhero\u2014now a broke, middle-aged man hiding in plain sight\u2014gets an unexpected visitor: a child who has inherited his powers. The child begs him to train her, claiming that something dark is coming and only she can stop it.\n\nThe hero, haunted by a past mistake that cost lives, refuses. But when the child is abducted by a mysterious group trying to harvest her powers, he must confront his guilt, reclaim his strength, and rise for one last mission.\n\n",
-    "status": "error",
-    "created_at": 1744661378,
-    "updated_at": 1744661397,
-    "video_ready": false,
-    "error": "401 Client Error: Unauthorized for url: https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2"
+    "job_id": "47537a8d-be08-4f98-817c-39dd2fd379d4",
+    "prompt": "\"A man wakes up in a town where everyone knows his name\u2014but he doesn\u2019t recognize a single face.\"\n\n\n",
+    "created_at": 1744752654.9806323,
+    "status": "pending",
+    "progress": 0
   },
   {
-    "id": "fb606dd8-8d37-4d4e-bf3b-0af0f257ba6c",
-    "prompt": "In a quiet Nigerian neighborhood, a retired superhero\u2014now a broke, middle-aged man hiding in plain sight\u2014gets an unexpected visitor: a child who has inherited his powers. The child begs him to train her, claiming that something dark is coming and only she can stop it.\n\nThe hero, haunted by a past mistake that cost lives, refuses. But when the child is abducted by a mysterious group trying to harvest her powers, he must confront his guilt, reclaim his strength, and rise for one last mission.\n\n",
-    "status": "error",
-    "created_at": 1744662557,
-    "updated_at": 1744662572,
-    "video_ready": false,
-    "error": "HTTPSConnectionPool(host='api-inference.huggingface.co', port=443): Max retries exceeded with url: /models/mistralai/Mistral-7B-Instruct-v0.2 (Caused by NameResolutionError(\"<urllib3.connection.HTTPSConnection object at 0x00000145DFF942D0>: Failed to resolve 'api-inference.huggingface.co' ([Errno 11001] getaddrinfo failed)\"))"
+    "job_id": "10df4cfe-6b50-49b3-8732-beb453346bc1",
+    "prompt": "\"A man wakes up in a town where everyone knows his name\u2014but he doesn\u2019t recognize a single face.\"\n\n\n",
+    "created_at": 1744752673.4980578,
+    "status": "pending",
+    "progress": 0
   },
   {
-    "id": "925652aa-ee0b-47c6-9266-73cfb98752a7",
-    "prompt": "In a quiet Nigerian neighborhood, a retired superhero\u2014now a broke, middle-aged man hiding in plain sight\u2014gets an unexpected visitor: a child who has inherited his powers. The child begs him to train her, claiming that something dark is coming and only she can stop it.\n\nThe hero, haunted by a past mistake that cost lives, refuses. But when the child is abducted by a mysterious group trying to harvest her powers, he must confront his guilt, reclaim his strength, and rise for one last mission.\n\n",
-    "status": "error",
-    "created_at": 1744667256,
-    "updated_at": 1744667277,
-    "video_ready": false,
-    "error": "401 Client Error: Unauthorized for url: https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2"
+    "job_id": "0ef6c4f6-a71f-41f4-a940-419d3f483c22",
+    "prompt": "\"A man wakes up in a town where everyone knows his name\u2014but he doesn\u2019t recognize a single face.\"\n\n\n",
+    "created_at": 1744753280.7236733,
+    "status": "pending",
+    "progress": 0
   },
   {
-    "id": "65d5ce1e-22cb-4f93-831b-43ee877dc0b8",
-    "prompt": "In a quiet Nigerian neighborhood, a retired superhero\u2014now a broke, middle-aged man hiding in plain sight\u2014gets an unexpected visitor: a child who has inherited his powers. The child begs him to train her, claiming that something dark is coming and only she can stop it.\n\nThe hero, haunted by a past mistake that cost lives, refuses. But when the child is abducted by a mysterious group trying to harvest her powers, he must confront his guilt, reclaim his strength, and rise for one last mission.\n\n",
-    "status": "error",
-    "created_at": 1744676232,
-    "updated_at": 1744676251,
-    "video_ready": false,
-    "error": "401 Client Error: Unauthorized for url: https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2"
+    "job_id": "7a3f7815-ee7b-49e1-88b6-12a1cb74921b",
+    "prompt": "\"A man wakes up in a town where everyone knows his name\u2014but he doesn\u2019t recognize a single face.\"\n\n\n",
+    "created_at": 1744754975.4440877,
+    "status": "pending",
+    "progress": 0
+  },
+  {
+    "job_id": "51b81b58-9c75-49f3-8d2b-f87af7f63828",
+    "prompt": "\"A man wakes up in a town where everyone knows his name\u2014but he doesn\u2019t recognize a single face.\"\n\n",
+    "created_at": 1744755862.926566,
+    "status": "pending",
+    "progress": 0
+  },
+  {
+    "job_id": "d7dcc0c8-6c46-42e6-a771-334dbf6bae6a",
+    "prompt": "In a quiet Nigerian neighborhood, a retired superhero\u2014now a broke, middle-aged man hiding in plain sight\u2014gets an unexpected visitor: a child who has inherited his powers. The child begs him to train her, claiming that something dark is coming and only she can stop it.\n\nThe hero, haunted by a past mistake that cost lives, refuses. But when the child is abducted by a mysterious group trying to harvest her powers, he must confront his guilt, reclaim his strength, and rise for one last mission.",
+    "created_at": 1744801192.6248422,
+    "status": "pending",
+    "progress": 0
+  },
+  {
+    "job_id": "5345cbd2-0be7-4fd0-9609-d99501dfb14d",
+    "prompt": "In a city plagued by endless blackouts and crime, a young woman discovers she can generate light\u2014but only when she\u2019s near death.\n\nAfter saving her younger brother during a violent robbery, word spreads of a \"light spirit\" protecting the slums. Now, hunted by both gangs and a secret government unit, she must decide: keep running, or burn bright one last time to spark a revolution.\n\n",
+    "created_at": 1744803578.0520477,
+    "status": "pending",
+    "progress": 0
   }
 ]

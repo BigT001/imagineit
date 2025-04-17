@@ -1,77 +1,112 @@
-// API base URL
-export const API_BASE_URL = 'http://localhost:5000/api';
+import { Job, JobStatusInfo, GenerateResult } from '@/types';
 
-// Test backend connection
-export const testBackendConnection = async () => {
-  const response = await fetch(`${API_BASE_URL}/test`);
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+// Base API URL
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+
+// Fetch all jobs
+export const fetchJobs = async (): Promise<{ status: string; jobs: Job[] }> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/jobs`);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching jobs:', error);
+    throw error;
   }
-  return await response.json();
-};
-
-// Check Blender version
-export const checkBlenderVersion = async () => {
-  const response = await fetch(`${API_BASE_URL}/blender-version`);
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-  return await response.json();
-};
-
-// Upload a file
-export const uploadFile = async (file: File) => {
-  const formData = new FormData();
-  formData.append('file', file);
-  
-  const response = await fetch(`${API_BASE_URL}/upload`, {
-    method: 'POST',
-    body: formData,
-  });
-  
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-  
-  return await response.json();
-};
-
-// Generate a video
-export const generateVideo = async (prompt: string) => {
-  const response = await fetch(`${API_BASE_URL}/generate`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ prompt }),
-  });
-  
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-  
-  return await response.json();
-};
-
-
-// Fetch jobs
-export const fetchJobs = async () => {
-  const response = await fetch(`${API_BASE_URL}/jobs`);
-  
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-  
-  return await response.json();
 };
 
 // Fetch job status
-export const fetchJobStatus = async (jobId: string) => {
-  const response = await fetch(`${API_BASE_URL}/jobs/${jobId}`);
-  
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+export const fetchJobStatus = async (jobId: string): Promise<{ status: string; job: JobStatusInfo }> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/job/${jobId}`);
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`Error response from server: ${errorText}`);
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching job status:', error);
+    throw error;
   }
-  
-  return await response.json();
+};
+
+
+
+// Create a new job
+export const createJob = async (prompt: string): Promise<GenerateResult> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/job`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ prompt }),
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error creating job:', error);
+    throw error;
+  }
+};
+
+// Cancel a job
+export const cancelJob = async (jobId: string): Promise<{ status: string; message: string }> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/job/${jobId}/cancel`, {
+      method: 'POST',
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error cancelling job:', error);
+    throw error;
+  }
+};
+
+// Fetch script for a job
+export const fetchScript = async (jobId: string): Promise<{ status: string; script: any }> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/script/${jobId}`);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching script:', error);
+    throw error;
+  }
+};
+
+// Fetch assets for a job
+export const fetchAssets = async (jobId: string): Promise<{ status: string; assets: any }> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/assets/${jobId}`);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching assets:', error);
+    throw error;
+  }
 };

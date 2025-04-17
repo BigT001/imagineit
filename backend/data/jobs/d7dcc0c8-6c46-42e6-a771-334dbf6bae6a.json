@@ -1,0 +1,38 @@
+{
+  "job_id": "d7dcc0c8-6c46-42e6-a771-334dbf6bae6a",
+  "prompt": "In a quiet Nigerian neighborhood, a retired superhero\u2014now a broke, middle-aged man hiding in plain sight\u2014gets an unexpected visitor: a child who has inherited his powers. The child begs him to train her, claiming that something dark is coming and only she can stop it.\n\nThe hero, haunted by a past mistake that cost lives, refuses. But when the child is abducted by a mysterious group trying to harvest her powers, he must confront his guilt, reclaim his strength, and rise for one last mission.",
+  "image_id": null,
+  "created_at": 1744801192.6248422,
+  "updated_at": 1744801192.6762478,
+  "status": "error",
+  "progress": 5,
+  "current_step": "Error during processing",
+  "steps": [
+    {
+      "name": "script_generation",
+      "status": "pending",
+      "progress": 0,
+      "message": "Waiting to start"
+    },
+    {
+      "name": "asset_generation",
+      "status": "pending",
+      "progress": 0,
+      "message": "Waiting for script generation"
+    },
+    {
+      "name": "animation",
+      "status": "pending",
+      "progress": 0,
+      "message": "Waiting for asset generation"
+    },
+    {
+      "name": "rendering",
+      "status": "pending",
+      "progress": 0,
+      "message": "Waiting for animation"
+    }
+  ],
+  "output": {},
+  "error": "'job_id'"
+}

@@ -1,0 +1,38 @@
+{
+  "job_id": "47537a8d-be08-4f98-817c-39dd2fd379d4",
+  "prompt": "\"A man wakes up in a town where everyone knows his name\u2014but he doesn\u2019t recognize a single face.\"\n\n\n",
+  "image_id": null,
+  "created_at": 1744752654.9806323,
+  "updated_at": 1744752655.000576,
+  "status": "error",
+  "progress": 5,
+  "current_step": "Error during processing",
+  "steps": [
+    {
+      "name": "script_generation",
+      "status": "pending",
+      "progress": 0,
+      "message": "Waiting to start"
+    },
+    {
+      "name": "asset_generation",
+      "status": "pending",
+      "progress": 0,
+      "message": "Waiting for script generation"
+    },
+    {
+      "name": "animation",
+      "status": "pending",
+      "progress": 0,
+      "message": "Waiting for asset generation"
+    },
+    {
+      "name": "rendering",
+      "status": "pending",
+      "progress": 0,
+      "message": "Waiting for animation"
+    }
+  ],
+  "output": {},
+  "error": "'job_id'"
+}

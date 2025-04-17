@@ -3,7 +3,7 @@ import json
 import logging
 import requests
 import time
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Callable, Optional
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -16,50 +16,103 @@ class ScriptGenerator:
         self.api_key = os.environ.get('HUGGINGFACE_API_KEY')
         if not self.api_key:
             logger.warning("HUGGINGFACE_API_KEY environment variable not set")
-        
+            
         # Default model to use
         self.model = os.environ.get('HUGGINGFACE_MODEL', 'mistralai/Mistral-7B-Instruct-v0.2')
         logger.info(f"Using Hugging Face model: {self.model}")
-        
+            
         # API endpoint
         self.api_url = f"https://api-inference.huggingface.co/models/{self.model}"
-        
+            
         # Headers for API requests
         self.headers = {
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json"
         }
     
-    def generate_script(self, prompt: str) -> Dict[str, Any]:
+    def generate_script(self, prompt: str, status_callback: Optional[Callable] = None) -> Dict[str, Any]:
         """
         Generate a script based on a prompt using Hugging Face's API.
-        
+            
         Args:
             prompt (str): The prompt to generate a script from
-            
+            status_callback (callable, optional): Callback to update job status
+                
         Returns:
             dict: The generated script
         """
         try:
             logger.info(f"Generating script for prompt: {prompt}")
             
+            if status_callback:
+                status_callback(
+                    status="processing",
+                    current_step="Analyzing prompt and preparing script generation",
+                    progress=10,
+                    step_name="script_generation",
+                    step_status="processing",
+                    step_progress=10
+                )
+                
             # Create the prompt for the model
             formatted_prompt = self._format_prompt(prompt)
             
+            if status_callback:
+                status_callback(
+                    status="processing",
+                    current_step="Sending request to language model",
+                    progress=20,
+                    step_name="script_generation",
+                    step_status="processing",
+                    step_progress=30
+                )
+                
             # Call the Hugging Face API
-            response = self._call_huggingface_api(formatted_prompt)
+            response = self._call_huggingface_api(formatted_prompt, status_callback)
             
+            if status_callback:
+                status_callback(
+                    status="processing",
+                    current_step="Processing language model response",
+                    progress=40,
+                    step_name="script_generation",
+                    step_status="processing",
+                    step_progress=70
+                )
+                
             # Parse the response to extract the script
             script = self._parse_response(response, prompt)
             
+            if status_callback:
+                status_callback(
+                    status="processing",
+                    current_step="Script generation completed",
+                    progress=50,
+                    step_name="script_generation",
+                    step_status="completed",
+                    step_progress=100
+                )
+                
             logger.info(f"Script generated successfully")
-            
+                
             return {
                 "status": "success",
                 "script": script
             }
         except Exception as e:
             logger.error(f"Error generating script: {e}")
+            
+            if status_callback:
+                status_callback(
+                    status="error",
+                    current_step="Error in script generation",
+                    progress=0,
+                    step_name="script_generation",
+                    step_status="error",
+                    step_progress=0,
+                    error=str(e)
+                )
+                
             return {
                 "status": "error",
                 "error": str(e)
@@ -67,8 +120,7 @@ class ScriptGenerator:
     
     def _format_prompt(self, prompt: str) -> str:
         """Format the user prompt for the model."""
-        return f"""
-You are a professional video script writer. Create a detailed script for a short video based on the following prompt:
+        return f"""You are a professional video script writer. Create a detailed script for a short video based on the following prompt:
 
 "{prompt}"
 
@@ -76,7 +128,9 @@ The script should include:
 1. A title for the video
 2. A list of scenes, where each scene has:
    - A detailed description of what happens in the scene
-   - The duration of the scene in seconds (between 10-20 seconds)
+   - The duration of the scene in seconds (between 3-8 seconds)
+   - Camera directions (e.g., "wide shot", "close-up", "tracking shot")
+   - Any special visual effects or transitions
 
 Format your response as a JSON object with the following structure:
 {{
@@ -84,19 +138,22 @@ Format your response as a JSON object with the following structure:
   "scenes": [
     {{
       "description": "Detailed description of scene 1",
-      "duration": 5
+      "duration": 5,
+      "camera": "Wide establishing shot",
+      "effects": "Slow fade in"
     }},
     {{
       "description": "Detailed description of scene 2",
-      "duration": 7
+      "duration": 7,
+      "camera": "Medium close-up",
+      "effects": "None"
     }}
   ]
 }}
 
-Make sure your response is valid JSON and includes at least 5 -10 scenes.
-"""
+Make sure your response is valid JSON and includes at least 5-8 scenes. The total video duration should be around 30-45 seconds."""
     
-    def _call_huggingface_api(self, prompt: str) -> str:
+    def _call_huggingface_api(self, prompt: str, status_callback: Optional[Callable] = None) -> str:
         """Call the Hugging Face API to generate text."""
         payload = {
             "inputs": prompt,
@@ -107,32 +164,55 @@ Make sure your response is valid JSON and includes at least 5 -10 scenes.
                 "do_sample": True
             }
         }
-        
+            
         # Make the API request
         max_retries = 3
         retry_delay = 5
-        
+            
         for attempt in range(max_retries):
             try:
+                if status_callback:
+                    status_callback(
+                        status="processing",
+                        current_step=f"Calling language model (attempt {attempt+1}/{max_retries})",
+                        progress=25 + attempt * 5,
+                        step_name="script_generation",
+                        step_status="processing",
+                        step_progress=30 + attempt * 10
+                    )
+                    
                 response = requests.post(
                     self.api_url,
                     headers=self.headers,
-                    json=payload
+                    json=payload,
+                    timeout=60  # Add timeout to prevent hanging requests
                 )
-                
+                            
                 # Check if the model is still loading
                 if response.status_code == 503:
                     logger.warning("Model is still loading. Waiting before retry...")
+                    
+                    if status_callback:
+                        status_callback(
+                            status="processing",
+                            current_step="Model is still loading, waiting to retry",
+                            progress=25 + attempt * 5,
+                            step_name="script_generation",
+                            step_status="processing",
+                            step_progress=30 + attempt * 10,
+                            message="The language model is still loading. Waiting before retrying."
+                        )
+                        
                     time.sleep(retry_delay)
                     retry_delay *= 2  # Exponential backoff
                     continue
-                
+                            
                 # Check for other errors
                 response.raise_for_status()
-                
+                            
                 # Parse the response
                 result = response.json()
-                
+                            
                 # Extract the generated text
                 if isinstance(result, list) and len(result) > 0:
                     if "generated_text" in result[0]:
@@ -143,9 +223,21 @@ Make sure your response is valid JSON and includes at least 5 -10 scenes.
                     return result["generated_text"]
                 else:
                     return str(result)
-                
+                        
             except requests.exceptions.RequestException as e:
                 logger.error(f"API request failed (attempt {attempt+1}/{max_retries}): {e}")
+                
+                if status_callback:
+                    status_callback(
+                        status="processing",
+                        current_step=f"API request failed, retrying ({attempt+1}/{max_retries})",
+                        progress=25 + attempt * 5,
+                        step_name="script_generation",
+                        step_status="processing",
+                        step_progress=30 + attempt * 10,
+                        message=f"API request failed: {str(e)}. Retrying..."
+                    )
+                    
                 if attempt == max_retries - 1:
                     raise
                 time.sleep(retry_delay)
@@ -156,71 +248,131 @@ Make sure your response is valid JSON and includes at least 5 -10 scenes.
         try:
             # Try to find JSON in the response
             start_idx = response.find('{')
-            end_idx = response.rfind('}') + 1
+            end_idx = response.rfind('}')
             
-            if start_idx >= 0 and end_idx > start_idx:
-                json_str = response[start_idx:end_idx]
+            if start_idx != -1 and end_idx != -1:
+                json_str = response[start_idx:end_idx+1]
                 script = json.loads(json_str)
                 
                 # Validate the script structure
-                if "title" not in script:
-                    script["title"] = self._extract_title(original_prompt)
+                if "title" not in script or "scenes" not in script:
+                    raise ValueError("Generated script is missing required fields (title or scenes)")
                 
-                if "scenes" not in script or not script["scenes"]:
-                    script["scenes"] = self._create_default_scenes(original_prompt)
-                
-                # Add the original prompt
-                script["prompt"] = original_prompt
+                # Ensure each scene has the required fields
+                for i, scene in enumerate(script["scenes"]):
+                    if "description" not in scene:
+                        scene["description"] = f"Scene {i+1}"
+                    if "duration" not in scene:
+                        scene["duration"] = 5  # Default duration
+                    if "camera" not in scene:
+                        scene["camera"] = "Medium shot"
+                    if "effects" not in scene:
+                        scene["effects"] = "None"
                 
                 return script
             else:
-                # If no JSON found, create a default script
-                logger.warning("No valid JSON found in the response. Creating default script.")
-                return {
-                    "title": self._extract_title(original_prompt),
-                    "prompt": original_prompt,
-                    "scenes": self._create_default_scenes(original_prompt)
-                }
+                # If JSON parsing fails, create a basic script structure
+                logger.warning("Could not parse JSON from model response. Creating basic script.")
+                return self._create_fallback_script(response, original_prompt)
+                
         except json.JSONDecodeError:
-            # If JSON parsing fails, create a default script
-            logger.warning("Failed to parse JSON from response. Creating default script.")
-            return {
-                "title": self._extract_title(original_prompt),
-                "prompt": original_prompt,
-                "scenes": self._create_default_scenes(original_prompt)
-            }
+            logger.warning("JSON decode error. Creating fallback script.")
+            return self._create_fallback_script(response, original_prompt)
+        except Exception as e:
+            logger.error(f"Error parsing response: {e}")
+            return self._create_fallback_script(response, original_prompt)
     
-    def _extract_title(self, prompt: str) -> str:
-        """Extract a title from the prompt."""
-        # Take the first sentence or up to 50 characters
-        title = prompt.split('.')[0].strip()
-        if len(title) > 50:
-            title = title[:47] + "..."
-        return title
-    
-    def _create_default_scenes(self, prompt: str) -> List[Dict[str, Any]]:
-        """Create default scenes from the prompt."""
-    def _create_default_scenes(self, prompt: str) -> List[Dict[str, Any]]:
-        """Create default scenes from the prompt."""
-        # Split the prompt into sentences
-        sentences = [s.strip() for s in prompt.split('.') if s.strip()]
+    def _create_fallback_script(self, response: str, original_prompt: str) -> Dict[str, Any]:
+        """Create a fallback script when parsing fails."""
+        logger.info("Creating fallback script")
         
-        # Create scenes from sentences
+        # Try to extract scenes from the text response
         scenes = []
-        for i, sentence in enumerate(sentences[:5]):  # Limit to 5 scenes
-            if not sentence:
+        lines = response.split('\n')
+        current_scene = None
+        
+        for line in lines:
+            line = line.strip()
+            if not line:
                 continue
                 
-            scenes.append({
-                "description": sentence,
-                "duration": 5  # Default duration
-            })
+            # Look for scene indicators
+            if "scene" in line.lower() and ":" in line:
+                if current_scene:
+                    scenes.append(current_scene)
+                current_scene = {
+                    "description": line.split(":", 1)[1].strip(),
+                    "duration": 5,
+                    "camera": "Medium shot",
+                    "effects": "None"
+                }
+            elif current_scene and "duration" in line.lower():
+                try:
+                    # Try to extract duration
+                    duration_str = line.split(":", 1)[1].strip()
+                    duration = int(''.join(filter(str.isdigit, duration_str)))
+                    if 1 <= duration <= 20:  # Sanity check
+                        current_scene["duration"] = duration
+                except:
+                    pass
+            elif current_scene and "camera" in line.lower():
+                try:
+                    # Try to extract camera direction
+                    current_scene["camera"] = line.split(":", 1)[1].strip()
+                except:
+                    pass
+            elif current_scene and "effect" in line.lower():
+                try:
+                    # Try to extract effects
+                    current_scene["effects"] = line.split(":", 1)[1].strip()
+                except:
+                    pass
+            elif current_scene:
+                # Add to the current scene description
+                current_scene["description"] += " " + line
         
-        # If no scenes were created, create a default one
+        # Add the last scene if it exists
+        if current_scene:
+            scenes.append(current_scene)
+        
+        # If we couldn't extract any scenes, create some basic ones
         if not scenes:
-            scenes.append({
-                "description": prompt,
-                "duration": 5
-            })
+            # Create a basic 5-scene script
+            scenes = [
+                {
+                    "description": f"Scene showing {original_prompt}",
+                    "duration": 5,
+                    "camera": "Wide shot",
+                    "effects": "Fade in"
+                },
+                {
+                    "description": f"Close-up detail of {original_prompt}",
+                    "duration": 4,
+                    "camera": "Close-up",
+                    "effects": "None"
+                },
+                {
+                    "description": f"Another angle of {original_prompt}",
+                    "duration": 6,
+                    "camera": "Medium shot",
+                    "effects": "None"
+                },
+                {
+                    "description": f"Showing the context around {original_prompt}",
+                    "duration": 5,
+                    "camera": "Wide shot",
+                    "effects": "None"
+                },
+                {
+                    "description": f"Final view of {original_prompt}",
+                    "duration": 5,
+                    "camera": "Tracking shot",
+                    "effects": "Fade out"
+                }
+            ]
         
-        return scenes
+        # Create the script
+        return {
+            "title": f"Video about {original_prompt}",
+            "scenes": scenes
+        }
